@@ -1,11 +1,11 @@
 
 #dir
-db_dir = "/media/sda1/Data/Face_detection/"
-pos_dir = db_dir + "AFLW/aflw/data/flickr/"
-neg_dir = db_dir + "neg_train/"
+db_dir = "/home/kobeyu/workspace/dataset/"
+pos_dir = db_dir + "AFLW/aflw/data/flicker/"
+neg_dir = db_dir + "val2017/"
 test_dir = db_dir + "FDDB/"
 fig_dir = db_dir + "result/fig/"
-model_dir = db_dir + "result/model/"
+model_dir = '/home/kobeyu/workspace/model/AConvNNCascade4FD/'
 
 #db parameters
 input_channel = 3
@@ -22,7 +22,7 @@ dim_48 = img_size_48 * img_size_48 * input_channel
 b_init = 0.0
 w_std = 0.1
 lr = 5e-2
-epoch_num = 100
+epoch_num = 3
 pos_batch = 32
 neg_batch = 96
 mini_batch = 128

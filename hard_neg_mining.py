@@ -1,7 +1,10 @@
 import numpy as np
 import tensorflow as tf
 from PIL import Image
-from compiler.ast import flatten
+#from compiler.ast import flatten
+from funcy import flatten
+
+
 import os
 import sys
 import math
@@ -133,9 +136,11 @@ for nid,img_name in enumerate(neg_file_list):
     img.close()
 
     if (nid+1) % 1000 == 0 or nid == len(neg_file_list)-1:
+        #print(str(len(neg_db[1])))
+        #print('shape of neg_db' + str(np.shape(neg_db)))
+        neg_db = list(flatten(neg_db))
 
-        neg_db = flatten(neg_db)
-        
+
         if sys.argv[1] == str(param.img_size_24):
             neg_db_12 = np.zeros((len(neg_db),param.img_size_12,param.img_size_12,param.input_channel),np.float32)
             neg_db_24 = np.zeros((len(neg_db),param.img_size_24,param.img_size_24,param.input_channel),np.float32)
@@ -173,5 +178,5 @@ for nid,img_name in enumerate(neg_file_list):
             neg_db = [0 for _ in range(1000)]
 
 
-    print "neg mining: " + str(nid) + "/" + str(len(neg_file_list)) + " db size: " + str(neg_db_sz)
+    print("neg mining: " + str(nid) + "/" + str(len(neg_file_list)) + " db size: " + str(neg_db_sz))
 

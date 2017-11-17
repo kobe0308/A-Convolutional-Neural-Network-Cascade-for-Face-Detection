@@ -3,7 +3,7 @@ import tensorflow as tf
 import random
 import os
 from PIL import Image
-import ImageDraw
+from PIL import ImageDraw
 
 import param
 import util
@@ -54,7 +54,7 @@ restorer_48_calib.restore(sess, param.model_dir + "48-calib-net.ckpt")
 
 iid = 0
 box_num = 0
-print "test start!"
+print("test start!")
 os.system("rm " + param.db_dir + "result/*.txt")
 for fid in range(param.fold_num):
 
@@ -64,7 +64,7 @@ for fid in range(param.fold_num):
 
     for tid,img_name in enumerate(fold_img_name):
         
-        print "test: " "fold " + str(fid+1) + "/" + str(param.fold_num) + " img " + str(tid) + "/" + str(len(fold_img_name))
+        print("test: " "fold " + str(fid+1) + "/" + str(param.fold_num) + " img " + str(tid) + "/" + str(len(fold_img_name)))
 
         img = Image.open(param.test_dir + img_name + ".jpg")
         
@@ -78,6 +78,8 @@ for fid in range(param.fold_num):
         #12-net
         #xmin, ymin, xmax, ymax, score, cropped_img, scale
         result_box = util.sliding_window(img, param.thr_12, net_12, input_12_node)
+        print('12-net result box: ')
+        print(len(result_box))
         
         #12-calib
         result_db_tmp = np.zeros((len(result_box),param.img_size_12,param.img_size_12,param.input_channel),np.float32)
@@ -86,6 +88,8 @@ for fid in range(param.fold_num):
 
         calib_result = net_12_calib.prediction.eval(feed_dict={input_12_node: result_db_tmp})
         result_box = util.calib_box(result_box,calib_result,img)
+        print('12-net-cali box:')
+        print(len(result_box))
 
         #NMS for each scale
         scale_cur = 0
@@ -116,7 +120,10 @@ for fid in range(param.fold_num):
         result = net_24.prediction.eval(feed_dict={input_24_node: result_db_24, from_12_node: from_12})
         result_id = np.where(result > param.thr_24)[0]
         result_box = [result_box[i] for i in result_id]
-       
+        print('24-net result:')
+        print(len(result_box))
+
+
         #24-calib
         result_db_tmp = np.zeros((len(result_box),param.img_size_24,param.img_size_24,param.input_channel),np.float32)
         for id_,box in enumerate(result_box):
@@ -124,6 +131,9 @@ for fid in range(param.fold_num):
 
         calib_result = net_24_calib.prediction.eval(feed_dict={input_24_node: result_db_tmp})
         result_box = util.calib_box(result_box,calib_result,img)
+        print('24-net-cali result')
+        print(len(result_box))
+
 
         #NMS for each scale
         scale_cur = 0
@@ -160,7 +170,8 @@ for fid in range(param.fold_num):
         result = net_48.prediction.eval(feed_dict={input_48_node: result_db_48, from_24_node: from_24})
         result_id = np.where(result > param.thr_48)[0]
         result_box = [result_box[i] for i in result_id]
-
+        print('48-net result:')
+        print(len(result_box))
 
         #global NMS
         result_box = util.NMS(result_box)
@@ -173,7 +184,8 @@ for fid in range(param.fold_num):
         calib_result = net_48_calib.prediction.eval(feed_dict={input_48_node: result_db_tmp})
         result_box = util.calib_box(result_box,calib_result,img)
 
- 
+        print('48-net-cali')
+        print(len(result_box))
         #result write
         box_num += len(result_box)
         iid += 1
@@ -190,10 +202,11 @@ for fid in range(param.fold_num):
             #ImageDraw.Draw(img).rectangle((box[0],box[1],box[2],box[3]), outline="red")
             fp_result.write(str(box[0]) + " " + str(box[1]) + " " + str(box[2]-box[0]) + " " + str(box[3]-box[1]) + " " + str(box[4]) + "\n")
         
-        #img.save(param.fig_dir + str(fid) + "_" + str(tid) + ".jpg")
+        img.save(param.fig_dir + str(fid) + "_" + str(tid) + ".jpg")
         img.close()
 
+        print('')
     fp_result.close()
 
 box_num /= float(iid)
-print "Avg # of box: ", str(box_num)
+print("Avg # of box: ", str(box_num))

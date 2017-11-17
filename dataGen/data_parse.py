@@ -1,7 +1,7 @@
 import sqlite3
 
-db_dir = "/media/sda1/Data/Face_detection/AFLW/aflw/data/aflw.sqlite"
-save_dir = "/media/sda1/Data/Face_detection/AFLW/aflw/data/annot"
+db_dir = "/home/kobeyu/workspace/dataset/AFLW/aflw/data/aflw.sqlite"
+save_dir = "/home/kobeyu/workspace/dataset/AFLW/aflw/data/annot"
 
 con = sqlite3.connect(db_dir)
 cursor = con.cursor()

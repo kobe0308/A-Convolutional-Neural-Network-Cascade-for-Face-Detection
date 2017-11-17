@@ -1,7 +1,8 @@
 import tensorflow as tf
 import numpy as np
 import math
-import Image
+from PIL import Image
+
 from skimage.util.shape import view_as_windows
 from skimage.transform import pyramid_gaussian
 
@@ -27,8 +28,8 @@ def calib_box(result_box,result,img):
     
 
     for id_,cid in enumerate(np.argmax(result,axis=1).tolist()):
-        s = cid / (len(param.cali_off_x) * len(param.cali_off_y))
-        x = cid % (len(param.cali_off_x) * len(param.cali_off_y)) / len(param.cali_off_y)
+        s = cid // (len(param.cali_off_x) * len(param.cali_off_y))
+        x = cid % (len(param.cali_off_x) * len(param.cali_off_y)) // len(param.cali_off_y)
         y = cid % (len(param.cali_off_x) * len(param.cali_off_y)) % len(param.cali_off_y) 
                 
         s = param.cali_scale[s]
@@ -88,8 +89,8 @@ def NMS(box):
 def sliding_window(img, thr, net, input_12_node):
 
     pyramid = tuple(pyramid_gaussian(img, downscale = param.downscale))
-    detected_list = [0 for _ in xrange(len(pyramid))]
-    for scale in xrange(param.pyramid_num):
+    detected_list = [0 for _ in range(len(pyramid))]
+    for scale in range(param.pyramid_num):
         
         X = pyramid[scale]
 
@@ -149,6 +150,6 @@ def sliding_window(img, thr, net, input_12_node):
             detected_list[scale] = detected_list_scale 
             
     detected_list = [elem for elem in detected_list if type(elem) != int]
-    result_box = [detected_list[i][j] for i in xrange(len(detected_list)) for j in xrange(len(detected_list[i]))]
+    result_box = [detected_list[i][j] for i in range(len(detected_list)) for j in range(len(detected_list[i]))]
     
     return result_box
