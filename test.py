@@ -100,7 +100,7 @@ for fid in range(param.fold_num):
                 scale_box.append(box)
             if box[6] != scale_cur or id_ == len(result_box)-1:
                 suppressed += util.NMS(scale_box)
-                scale_cur += 1
+                scale_cur = box[6]
                 scale_box = [box]
 
         result_box = suppressed
@@ -144,7 +144,7 @@ for fid in range(param.fold_num):
                 scale_box.append(box)
             if box[6] != scale_cur or id_ == len(result_box)-1:
                 suppressed += util.NMS(scale_box)
-                scale_cur += 1
+                scale_cur = box[6]
                 scale_box = [box]
 
         result_box = suppressed
